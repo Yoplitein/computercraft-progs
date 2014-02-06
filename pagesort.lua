@@ -1,6 +1,5 @@
---[[ Basic program for sorting Mystcraft pages. (or any other items with unique names, for that matter)
-     Duplicates are put into a chest on top, and new pages are put in the front.
-     Known pages are saved in pages.txt, so it will continue to work across reboots. ]]--
+--[[ Sorts Mystcraft biome and block pages.
+     Biomes are sent to the left, blocks to the right, everything else in front. ]]--
 
 local args = {...}
 local known = {}
@@ -21,53 +20,39 @@ local function get_all_stacks(inventory)
     return data
 end
 
-local function load_data()
-    file = fs.open("pages.txt", "r")
-    
-    if file then
-        known = textutils.unserialize(file.readAll())
-        
-        file.close()
+local function drop(side)
+    if     side == "left" then
+        turtle.turnLeft()
+        turtle.drop()
+        turtle.turnRight()
+    elseif side == "right" then
+        turtle.turnRight()
+        turtle.drop()
+        turtle.turnLeft()
+    elseif side == "front" then
+        turtle.drop()
     end
-end
-
-local function save_data()
-    file = fs.open("pages.txt", "w")
-    
-    file.write(textutils.serialize(known))
-    file.close()
 end
 
 local function main()
     local inChest = peripheral.wrap(args[1])
-    local new = false
-    
-    load_data()
     
     while true do
         for k,v in pairs(get_all_stacks(inChest)) do
             local name = v["name"]
             
-            if known[name] == nil then
-                print("Found new page (", name, ")")
-                
-                new = true
-                known[name] = true
-                
-                inChest.pushItemIntoSlot(args[2], k, 1, 1)
-                turtle.drop()
-            else
-                print("Found duplicate page (", name, ")")
-                
-                inChest.pushItemIntoSlot(args[2], k, 1, 1)
-                turtle.dropUp()
-            end
-        end
-        
-        if new then
-            save_data()
+            inChest.pushItemIntoSlot(args[2], k, 1, 1)
             
-            new = false
+            if     name:find("Biome)") then
+                print(name, " is biome")
+                drop("left")
+            elseif name:find("Block)") then
+                print(name, " is block")
+                drop("right")
+            else
+                print("I don't know what ", name, " is")
+                drop("front")
+            end
         end
         
         os.sleep(1)
