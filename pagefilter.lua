@@ -6,7 +6,7 @@ local args = {...}
 local known = {}
 
 if #args < 2 then
-    print("pagesort <side of input chest> <direction of turtle relative to chest (north/east/etc.)>")
+    print("pagefilter <side of input chest> <direction of turtle relative to chest (north/east/etc.)>")
     
     return
 end
