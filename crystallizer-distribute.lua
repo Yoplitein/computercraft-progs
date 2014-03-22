@@ -1,4 +1,5 @@
---[[ Evenly distributes inventory contents in a crystallizer. ]]--
+--[[ Evenly distributes inventory contents in a crystallizer.
+     Assumes the aqua regia is in the bottom slot. ]]--
 
 local validSlots = {1, 2, 3, 5, 6}
 
